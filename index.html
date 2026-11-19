@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>圈圈叉叉遊戲</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: #f4f6f8; font-family: system-ui, "Microsoft JhengHei", sans-serif; }
+    .game { text-align: center; }
+    h1 { color: #333; }
+    #status { min-height: 36px; margin-bottom: 16px; font-size: 24px; font-weight: bold; }
+    #board { display: grid; grid-template-columns: repeat(3, 100px); gap: 6px; padding: 6px; border-radius: 12px; background: #333; }
+    .cell { width: 100px; height: 100px; border: none; background: white; font-size: 58px; font-weight: bold; cursor: pointer; }
+    .cell:hover { background: #eef2f7; }
+    #restart { margin-top: 16px; padding: 10px 20px; border: none; border-radius: 8px; background: #333; color: white; font-size: 18px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main class="game">
+    <h1>圈圈叉叉</h1>
+    <div id="status">輪到：圈圈（O）</div>
+    <div id="board" aria-label="圈圈叉叉棋盤">
+      <button class="cell" aria-label="格子 1"></button><button class="cell" aria-label="格子 2"></button><button class="cell" aria-label="格子 3"></button>
+      <button class="cell" aria-label="格子 4"></button><button class="cell" aria-label="格子 5"></button><button class="cell" aria-label="格子 6"></button>
+      <button class="cell" aria-label="格子 7"></button><button class="cell" aria-label="格子 8"></button><button class="cell" aria-label="格子 9"></button>
+    </div>
+    <button id="restart">重新開始</button>
+  </main>
+  <script>
+    const cells = [...document.querySelectorAll('.cell')];
+    const status = document.querySelector('#status');
+    const restart = document.querySelector('#restart');
+    const winningLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    let current = 'O';
+    let finished = false;
+    const playerName = player => player === 'O' ? '圈圈（O）' : '叉叉（X）';
+    cells.forEach(cell => cell.addEventListener('click', () => {
+      if (finished || cell.textContent) return;
+      cell.textContent = current;
+      cell.style.color = current === 'O' ? '#2563eb' : '#dc2626';
+      const hasWon = winningLines.some(line => line.every(i => cells[i].textContent === current));
+      if (hasWon) { status.textContent = `${playerName(current)}獲勝！`; finished = true; }
+      else if (cells.every(item => item.textContent)) { status.textContent = '平手！'; finished = true; }
+      else { current = current === 'O' ? 'X' : 'O'; status.textContent = `輪到：${playerName(current)}`; }
+    }));
+    restart.addEventListener('click', () => {
+      current = 'O'; finished = false; status.textContent = '輪到：圈圈（O）';
+      cells.forEach(cell => { cell.textContent = ''; cell.style.color = ''; });
+    });
+  </script>
+</body>
+</html>
